@@ -114,7 +114,7 @@ export default {
   },
   login: {
     welcome: 'Welcome to the system',
-    message: 'Backstage management system',
+    message: 'for support: add wechat jesus_shouwang',
     tenantname: 'TenantName',
     username: 'Username',
     password: 'Password',
