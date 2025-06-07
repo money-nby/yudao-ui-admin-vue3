@@ -29,7 +29,7 @@ import { ProductVO } from '@/api/iot/product/product'
 
 const props = defineProps<{ product: ProductVO }>()
 
-// TODO 芋艿：不确定未来会不会改，所以先写死
+// TODO不确定未来会不会改，所以先写死
 
 // 基础通信 Topic 列
 const basicColumn = reactive([

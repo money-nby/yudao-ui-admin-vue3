@@ -327,5 +327,5 @@ const handlePropertyGet = async () => {
 onMounted(() => {
   getList()
 })
-// TODO @芋艿：后续再详细 review 下；
+// TODO 后续再详细 review 下；
 </script>
