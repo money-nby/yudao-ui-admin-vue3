@@ -7,9 +7,9 @@
       label-width="100px"
       v-loading="formLoading"
     >
-      <el-form-item label="上级id" prop="fthId">
-        <el-input v-model="formData.fthId" placeholder="请输入上级id" />
-      </el-form-item>
+<!--      <el-form-item label="上级id" prop="fthId">-->
+<!--        <el-input v-model="formData.fthId" placeholder="请输入上级id" />-->
+<!--      </el-form-item>-->
       <el-form-item label="文章标题" prop="title">
         <el-input v-model="formData.title" placeholder="请输入文章标题" />
       </el-form-item>
@@ -24,9 +24,9 @@
           placeholder="选择发布时间"
         />
       </el-form-item>
-      <el-form-item label="点击数" prop="clickCount">
-        <el-input v-model="formData.clickCount" placeholder="请输入点击数" />
-      </el-form-item>
+<!--      <el-form-item label="点击数" prop="clickCount">-->
+<!--        <el-input v-model="formData.clickCount" placeholder="请输入点击数" />-->
+<!--      </el-form-item>-->
       <el-form-item label="上级名称" prop="fthName">
         <el-input v-model="formData.fthName" placeholder="请输入上级名称" />
       </el-form-item>

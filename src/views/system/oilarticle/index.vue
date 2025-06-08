@@ -8,15 +8,15 @@
       :inline="true"
       label-width="68px"
     >
-      <el-form-item label="上级id" prop="fthId">
-        <el-input
-          v-model="queryParams.fthId"
-          placeholder="请输入上级id"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
+<!--      <el-form-item label="上级id" prop="fthId">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.fthId"-->
+<!--          placeholder="请输入上级id"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item label="文章标题" prop="title">
         <el-input
           v-model="queryParams.title"
@@ -46,15 +46,15 @@
           class="!w-220px"
         />
       </el-form-item>
-      <el-form-item label="点击数" prop="clickCount">
-        <el-input
-          v-model="queryParams.clickCount"
-          placeholder="请输入点击数"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
+<!--      <el-form-item label="点击数" prop="clickCount">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.clickCount"-->
+<!--          placeholder="请输入点击数"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--          class="!w-240px"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item label="创建时间" prop="createTime">
         <el-date-picker
           v-model="queryParams.createTime"
@@ -103,7 +103,7 @@
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
       <el-table-column label="文章id" align="center" prop="id" />
-      <el-table-column label="上级id" align="center" prop="fthId" />
+<!--      <el-table-column label="上级id" align="center" prop="fthId" />-->
       <el-table-column label="文章标题" align="center" prop="title" />
       <el-table-column label="文章来源" align="center" prop="source" />
       <el-table-column
