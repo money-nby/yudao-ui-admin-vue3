@@ -30,6 +30,22 @@
       <el-form-item label="上级名称" prop="fthName">
         <el-input v-model="formData.fthName" placeholder="请输入上级名称" />
       </el-form-item>
+
+      <div style="border: 1px solid #ccc">
+        <Toolbar
+          style="border-bottom: 1px solid #ccc"
+          :editor="editorRef"
+          :defaultConfig="toolbarConfig"
+          :mode="mode"
+        />
+        <Editor
+          style="height: 500px; overflow-y: hidden;"
+          v-model="valueHtml"
+          :defaultConfig="editorConfig"
+          :mode="mode"
+          @on-created="handleCreated"
+        />
+      </div>
     </el-form>
     <template #footer>
       <el-button @click="submitForm" type="primary" :disabled="formLoading">确 定</el-button>
@@ -39,6 +55,9 @@
 </template>
 <script setup lang="ts">
 import { OilArticleApi, OilArticleVO } from '@/api/system/oilarticle'
+import '@wangeditor/editor/dist/css/style.css' // 引入 css
+import { ref, shallowRef, onBeforeUnmount, onMounted } from 'vue'
+import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 
 /** 文章 表单 */
 defineOptions({ name: 'OilArticleForm' })
@@ -118,4 +137,26 @@ const resetForm = () => {
   }
   formRef.value?.resetFields()
 }
+
+// 富文本编辑器
+const editorRef = shallowRef()
+const valueHtml = ref('<p>hello</p>')
+const toolbarConfig = {}
+const editorConfig = { placeholder: '请输入内容...' }
+// 模拟 ajax 异步获取内容
+onMounted(() => {
+  setTimeout(() => {
+    valueHtml.value = '<p>模拟 Ajax 异步设置内容</p>'
+  }, 1500)
+})
+// 组件销毁时，也及时销毁编辑器
+onBeforeUnmount(() => {
+  const editor = editorRef.value
+  if (editor == null) return
+  editor.destroy()
+})
+const handleCreated = (editor) => {
+  editorRef.value = editor // 记录 editor 实例，重要！
+}
+const mode = 'default'
 </script>
