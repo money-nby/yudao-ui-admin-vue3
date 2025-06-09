@@ -55,17 +55,17 @@
 <!--          class="!w-240px"-->
 <!--        />-->
 <!--      </el-form-item>-->
-      <el-form-item label="创建时间" prop="createTime">
-        <el-date-picker
-          v-model="queryParams.createTime"
-          value-format="YYYY-MM-DD HH:mm:ss"
-          type="daterange"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
-          class="!w-220px"
-        />
-      </el-form-item>
+<!--      <el-form-item label="创建时间" prop="createTime">-->
+<!--        <el-date-picker-->
+<!--          v-model="queryParams.createTime"-->
+<!--          value-format="YYYY-MM-DD HH:mm:ss"-->
+<!--          type="daterange"-->
+<!--          start-placeholder="开始日期"-->
+<!--          end-placeholder="结束日期"-->
+<!--          :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"-->
+<!--          class="!w-220px"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item label="上级名称" prop="fthName">
         <el-input
           v-model="queryParams.fthName"
@@ -102,35 +102,44 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
-      <el-table-column label="文章id" align="center" prop="id" />
+<!--      <el-table-column label="文章id" align="center" prop="id" />-->
+      <el-table-column label="上级名称" align="center" prop="fthName" />
 <!--      <el-table-column label="上级id" align="center" prop="fthId" />-->
       <el-table-column label="文章标题" align="center" prop="title" />
-      <el-table-column label="文章来源" align="center" prop="source" />
+<!--      <el-table-column label="文章来源" align="center" prop="source" />-->
       <el-table-column
         label="发布时间"
         align="center"
         prop="publishTime"
-        :formatter="dateFormatter"
+        :formatter="dateFormatter2"
         width="180px"
       />
       <el-table-column label="点击数" align="center" prop="clickCount" />
-      <el-table-column
-        label="创建时间"
-        align="center"
-        prop="createTime"
-        :formatter="dateFormatter"
-        width="180px"
-      />
-      <el-table-column label="上级名称" align="center" prop="fthName" />
+      <el-table-column label="审核状态" align="center" prop="status" :formatter="statusFormatter"/>
+<!--      <el-table-column-->
+<!--        label="创建时间"-->
+<!--        align="center"-->
+<!--        prop="createTime"-->
+<!--        :formatter="dateFormatter"-->
+<!--        width="180px"-->
+<!--      />-->
       <el-table-column label="操作" align="center" min-width="120px">
         <template #default="scope">
           <el-button
             link
-            type="primary"
-            @click="openForm('update', scope.row.id)"
+            type="success"
+            @click="handleAccess(scope.row.id)"
             v-hasPermi="['system:oil-article:update']"
           >
-            编辑
+            通过
+          </el-button>
+          <el-button
+            link
+            type="warning"
+            @click="handleDeny(scope.row.id)"
+            v-hasPermi="['system:oil-article:update']"
+          >
+            拒绝
           </el-button>
           <el-button
             link
@@ -157,10 +166,11 @@
 </template>
 
 <script setup lang="ts">
-import { dateFormatter } from '@/utils/formatTime'
+import { dateFormatter, dateFormatter2 } from '@/utils/formatTime'
 import download from '@/utils/download'
 import { OilArticleApi, OilArticleVO } from '@/api/system/oilarticle'
 import OilArticleForm from './OilArticleForm.vue'
+import { ArticleCommentApi, ArticleCommentVO } from '@/api/system/articlecomment'
 
 /** 文章 列表 */
 defineOptions({ name: 'OilArticle' })
@@ -228,6 +238,40 @@ const handleDelete = async (id: number) => {
   } catch {}
 }
 
+const handleAccess = async (id: number) => {
+  try {
+    // 修改的二次确认
+    await message.confirm(`确认审核通过`)
+    console.log(id)
+    // 发起更改
+    const data = {
+      status: 1,
+      id
+    }
+    await OilArticleApi.updateOilArticle(data as unknown as OilArticleVO)
+    message.success(t('common.updateSuccess'))
+    // 刷新列表
+    await getList()
+  } catch {}
+}
+
+const handleDeny = async (id: number) => {
+  try {
+    // 删除的二次确认
+    await message.confirm(`确认审核拒绝`)
+    console.log(id)
+    // 发起更改
+    const data = {
+      status: 2,
+      id
+    }
+    await OilArticleApi.updateOilArticle(data as unknown as OilArticleVO)
+    message.success(t('common.updateSuccess'))
+    // 刷新列表
+    await getList()
+  } catch {}
+}
+
 /** 导出按钮操作 */
 const handleExport = async () => {
   try {
@@ -240,6 +284,21 @@ const handleExport = async () => {
   } catch {
   } finally {
     exportLoading.value = false
+  }
+}
+
+/** 格式化状态 */
+const statusFormatter = (row) => {
+  console.log(row)
+  switch (row.status) {
+    case 0:
+      return '待审核'
+    case 1:
+      return '通过'
+    case 2:
+      return '拒绝'
+    default:
+      return '-'
   }
 }
 

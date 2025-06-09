@@ -39,23 +39,23 @@
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
-<!--        <el-button-->
-<!--          type="primary"-->
-<!--          plain-->
-<!--          @click="openForm('create')"-->
-<!--          v-hasPermi="['system:article-comment:create']"-->
-<!--        >-->
-<!--          <Icon icon="ep:plus" class="mr-5px" /> 新增-->
-<!--        </el-button>-->
-<!--        <el-button-->
-<!--          type="success"-->
-<!--          plain-->
-<!--          @click="handleExport"-->
-<!--          :loading="exportLoading"-->
-<!--          v-hasPermi="['system:article-comment:export']"-->
-<!--        >-->
-<!--          <Icon icon="ep:download" class="mr-5px" /> 导出-->
-<!--        </el-button>-->
+        <!--        <el-button-->
+        <!--          type="primary"-->
+        <!--          plain-->
+        <!--          @click="openForm('create')"-->
+        <!--          v-hasPermi="['system:article-comment:create']"-->
+        <!--        >-->
+        <!--          <Icon icon="ep:plus" class="mr-5px" /> 新增-->
+        <!--        </el-button>-->
+        <!--        <el-button-->
+        <!--          type="success"-->
+        <!--          plain-->
+        <!--          @click="handleExport"-->
+        <!--          :loading="exportLoading"-->
+        <!--          v-hasPermi="['system:article-comment:export']"-->
+        <!--        >-->
+        <!--          <Icon icon="ep:download" class="mr-5px" /> 导出-->
+        <!--        </el-button>-->
       </el-form-item>
     </el-form>
   </ContentWrap>
@@ -63,19 +63,19 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
-<!--      <el-table-column label="id" align="center" prop="id" />-->
+      <!--      <el-table-column label="id" align="center" prop="id" />-->
       <el-table-column label="文章标题" align="center" prop="articleTitle" />
       <el-table-column label="评论人" align="center" prop="name" />
-<!--      <el-table-column label="评论人id" align="center" prop="userId" />-->
-<!--      <el-table-column-->
-<!--        label="用户id"-->
-<!--        align="center"-->
-<!--        prop="commentTime"-->
-<!--        :formatter="dateFormatter"-->
-<!--        width="180px"-->
-<!--      />-->
-      <el-table-column label="评论内容" align="center" prop="commentContent" />
-      <el-table-column label="审核状态" align="center" prop="status" />
+      <!--      <el-table-column label="评论人id" align="center" prop="userId" />-->
+      <!--      <el-table-column-->
+      <!--        label="用户id"-->
+      <!--        align="center"-->
+      <!--        prop="commentTime"-->
+      <!--        :formatter="dateFormatter"-->
+      <!--        width="180px"-->
+      <!--      />-->
+      <el-table-column label="评论内容" align="center" prop="commentContent" width="150" show-overflow-tooltip/>
+      <el-table-column label="审核状态" align="center" prop="status" :formatter="statusFormatter"/>
       <el-table-column
         label="评论时间"
         align="center"
@@ -83,7 +83,7 @@
         :formatter="dateFormatter"
         width="180px"
       />
-<!--      <el-table-column label="文章id" align="center" prop="articleId" />-->
+      <!--      <el-table-column label="文章id" align="center" prop="articleId" />-->
       <el-table-column label="操作" align="center" min-width="120px">
         <template #default="scope">
           <el-button
@@ -151,7 +151,7 @@ const queryParams = reactive({
   commentContent: undefined,
   status: undefined,
   createTime: [],
-  articleId: undefined,
+  articleId: undefined
 })
 const queryFormRef = ref() // 搜索的表单
 const exportLoading = ref(false) // 导出的加载中
@@ -201,12 +201,33 @@ const handleDelete = async (id: number) => {
 
 const handleAccess = async (id: number) => {
   try {
-    // 删除的二次确认
+    // 修改的二次确认
     await message.confirm(`确认审核通过`)
     console.log(id)
-    // 发起删除
-    await ArticleCommentApi.deleteArticleComment(id)
-    message.success(t('common.delSuccess'))
+    // 发起更改
+    const data = {
+      status: 1,
+      id
+    }
+    await ArticleCommentApi.updateArticleComment(data as unknown as ArticleCommentVO)
+    message.success(t('common.updateSuccess'))
+    // 刷新列表
+    await getList()
+  } catch {}
+}
+
+const handleDeny = async (id: number) => {
+  try {
+    // 删除的二次确认
+    await message.confirm(`确认审核拒绝`)
+    console.log(id)
+    // 发起更改
+    const data = {
+      status: 2,
+      id
+    }
+    await ArticleCommentApi.updateArticleComment(data as unknown as ArticleCommentVO)
+    message.success(t('common.updateSuccess'))
     // 刷新列表
     await getList()
   } catch {}
@@ -224,6 +245,21 @@ const handleExport = async () => {
   } catch {
   } finally {
     exportLoading.value = false
+  }
+}
+
+/** 格式化状态 */
+const statusFormatter = (row) => {
+  console.log(row.status)
+  switch (row.status) {
+    case 0:
+      return '待审核'
+    case 1:
+      return '通过'
+    case 2:
+      return '拒绝'
+    default:
+      return '-'
   }
 }
 
