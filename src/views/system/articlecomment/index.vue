@@ -39,23 +39,23 @@
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
-        <el-button
-          type="primary"
-          plain
-          @click="openForm('create')"
-          v-hasPermi="['system:article-comment:create']"
-        >
-          <Icon icon="ep:plus" class="mr-5px" /> 新增
-        </el-button>
-        <el-button
-          type="success"
-          plain
-          @click="handleExport"
-          :loading="exportLoading"
-          v-hasPermi="['system:article-comment:export']"
-        >
-          <Icon icon="ep:download" class="mr-5px" /> 导出
-        </el-button>
+<!--        <el-button-->
+<!--          type="primary"-->
+<!--          plain-->
+<!--          @click="openForm('create')"-->
+<!--          v-hasPermi="['system:article-comment:create']"-->
+<!--        >-->
+<!--          <Icon icon="ep:plus" class="mr-5px" /> 新增-->
+<!--        </el-button>-->
+<!--        <el-button-->
+<!--          type="success"-->
+<!--          plain-->
+<!--          @click="handleExport"-->
+<!--          :loading="exportLoading"-->
+<!--          v-hasPermi="['system:article-comment:export']"-->
+<!--        >-->
+<!--          <Icon icon="ep:download" class="mr-5px" /> 导出-->
+<!--        </el-button>-->
       </el-form-item>
     </el-form>
   </ContentWrap>
@@ -88,11 +88,19 @@
         <template #default="scope">
           <el-button
             link
-            type="primary"
-            @click="openForm('update', scope.row.id)"
+            type="success"
+            @click="handleAccess(scope.row.id)"
             v-hasPermi="['system:article-comment:update']"
           >
-            编辑
+            通过
+          </el-button>
+          <el-button
+            link
+            type="warning"
+            @click="handleDeny(scope.row.id)"
+            v-hasPermi="['system:article-comment:update']"
+          >
+            拒绝
           </el-button>
           <el-button
             link
@@ -183,6 +191,19 @@ const handleDelete = async (id: number) => {
   try {
     // 删除的二次确认
     await message.delConfirm()
+    // 发起删除
+    await ArticleCommentApi.deleteArticleComment(id)
+    message.success(t('common.delSuccess'))
+    // 刷新列表
+    await getList()
+  } catch {}
+}
+
+const handleAccess = async (id: number) => {
+  try {
+    // 删除的二次确认
+    await message.confirm(`确认审核通过`)
+    console.log(id)
     // 发起删除
     await ArticleCommentApi.deleteArticleComment(id)
     message.success(t('common.delSuccess'))
