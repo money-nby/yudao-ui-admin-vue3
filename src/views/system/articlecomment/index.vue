@@ -33,7 +33,12 @@
           clearable
           class="!w-240px"
         >
-          <el-option label="请选择字典生成" value="" />
+          <el-option
+            v-for="dict in getIntDictOptions('comment_check_status')"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -131,6 +136,7 @@ import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
 import { ArticleCommentApi, ArticleCommentVO } from '@/api/system/articlecomment'
 import ArticleCommentForm from './ArticleCommentForm.vue'
+import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 
 /** 文章评论 列表 */
 defineOptions({ name: 'ArticleComment' })

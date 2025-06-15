@@ -66,14 +66,20 @@
 <!--          class="!w-220px"-->
 <!--        />-->
 <!--      </el-form-item>-->
-      <el-form-item label="上级名称" prop="fthName">
-        <el-input
-          v-model="queryParams.fthName"
-          placeholder="请输入上级名称"
+      <el-form-item label="上级分类" prop="fthId">
+        <el-select
+          v-model="queryParams.fthId"
+          placeholder="请选择上级分类"
           clearable
-          @keyup.enter="handleQuery"
           class="!w-240px"
-        />
+        >
+          <el-option
+            v-for="dict in getIntDictOptions('article_type')"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
@@ -103,7 +109,7 @@
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
 <!--      <el-table-column label="文章id" align="center" prop="id" />-->
-      <el-table-column label="上级名称" align="center" prop="fthName" />
+      <el-table-column label="上级分类" align="center" prop="fthName" />
 <!--      <el-table-column label="上级id" align="center" prop="fthId" />-->
       <el-table-column label="文章标题" align="center" prop="title" />
 <!--      <el-table-column label="文章来源" align="center" prop="source" />-->
@@ -144,6 +150,14 @@
           <el-button
             link
             type="danger"
+            @click="openForm('update', scope.row.id)"
+            v-hasPermi="['system:oil-article:update']"
+          >
+            修改
+          </el-button>
+          <el-button
+            link
+            type="danger"
             @click="handleDelete(scope.row.id)"
             v-hasPermi="['system:oil-article:delete']"
           >
@@ -171,6 +185,7 @@ import download from '@/utils/download'
 import { OilArticleApi, OilArticleVO } from '@/api/system/oilarticle'
 import OilArticleForm from './OilArticleForm.vue'
 import { ArticleCommentApi, ArticleCommentVO } from '@/api/system/articlecomment'
+import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 
 /** 文章 列表 */
 defineOptions({ name: 'OilArticle' })

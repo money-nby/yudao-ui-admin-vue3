@@ -27,25 +27,94 @@
 <!--      <el-form-item label="点击数" prop="clickCount">-->
 <!--        <el-input v-model="formData.clickCount" placeholder="请输入点击数" />-->
 <!--      </el-form-item>-->
-      <el-form-item label="上级名称" prop="fthName">
-        <el-input v-model="formData.fthName" placeholder="请输入上级名称" />
+      <el-form-item label="上级分类" prop="fthId">
+<!--        <el-input v-model="formData.fthId" placeholder="请输入上级分类" />-->
+        <el-select
+          v-model="formData.fthId"
+          placeholder="请选择上级分类"
+          clearable
+          class="!w-240px"
+        >
+          <el-option
+            v-for="dict in getIntDictOptions('article_type')"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
 
-      <div style="border: 1px solid #ccc">
-        <Toolbar
-          style="border-bottom: 1px solid #ccc"
-          :editor="editorRef"
-          :defaultConfig="toolbarConfig"
-          :mode="mode"
-        />
-        <Editor
-          style="height: 500px; overflow-y: hidden;"
-          v-model="valueHtml"
-          :defaultConfig="editorConfig"
-          :mode="mode"
-          @on-created="handleCreated"
-        />
-      </div>
+      <el-form-item label="公开部分一" prop="pubText1">
+        <div style="border: 1px solid #ccc">
+          <Toolbar
+            style="border-bottom: 1px solid #ccc"
+            :editor="editorRef1"
+            :defaultConfig="toolbarConfig1"
+            :mode="mode1"
+          />
+          <Editor
+            style="height: 200px; overflow-y: hidden;"
+            v-model="formData.pubText1"
+            :defaultConfig="editorConfig1"
+            :mode="mode1"
+            @on-created="handleCreated1"
+          />
+        </div>
+      </el-form-item>
+
+      <el-form-item label="加密部分" prop="fthName">
+        <div style="border: 1px solid #ccc">
+          <Toolbar
+            style="border-bottom: 1px solid #ccc"
+            :editor="editorRef2"
+            :defaultConfig="toolbarConfig2"
+            :mode="mode2"
+          />
+          <Editor
+            style="height: 200px; overflow-y: hidden;"
+            v-model="formData.priText1"
+            :defaultConfig="editorConfig2"
+            :mode="mode2"
+            @on-created="handleCreated2"
+          />
+        </div>
+      </el-form-item>
+
+      <el-form-item label="公开部分二" prop="fthName">
+        <div style="border: 1px solid #ccc">
+          <Toolbar
+            style="border-bottom: 1px solid #ccc"
+            :editor="editorRef3"
+            :defaultConfig="toolbarConfig3"
+            :mode="mode3"
+          />
+          <Editor
+            style="height: 200px; overflow-y: hidden;"
+            v-model="formData.pubText2"
+            :defaultConfig="editorConfig3"
+            :mode="mode3"
+            @on-created="handleCreated3"
+          />
+        </div>
+      </el-form-item>
+
+<!--      <el-form-item label="公开部分3" prop="fthName">-->
+<!--        <div style="border: 1px solid #ccc">-->
+<!--          <Toolbar-->
+<!--            style="border-bottom: 1px solid #ccc"-->
+<!--            :editor="editorRef"-->
+<!--            :defaultConfig="toolbarConfig"-->
+<!--            :mode="mode"-->
+<!--          />-->
+<!--          <Editor-->
+<!--            style="height: 300px; overflow-y: hidden;"-->
+<!--            v-model="valueHtml3"-->
+<!--            :defaultConfig="editorConfig"-->
+<!--            :mode="mode"-->
+<!--            @on-created="handleCreated"-->
+<!--          />-->
+<!--        </div>-->
+<!--      </el-form-item>-->
     </el-form>
     <template #footer>
       <el-button @click="submitForm" type="primary" :disabled="formLoading">确 定</el-button>
@@ -58,6 +127,7 @@ import { OilArticleApi, OilArticleVO } from '@/api/system/oilarticle'
 import '@wangeditor/editor/dist/css/style.css' // 引入 css
 import { ref, shallowRef, onBeforeUnmount, onMounted } from 'vue'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
+import { getIntDictOptions } from '@/utils/dict'
 
 /** 文章 表单 */
 defineOptions({ name: 'OilArticleForm' })
@@ -77,6 +147,9 @@ const formData = ref({
   publishTime: undefined,
   clickCount: undefined,
   fthName: undefined,
+  pubText1: undefined,
+  priText1: undefined,
+  pubText2: undefined,
 })
 const formRules = reactive({
 })
@@ -134,29 +207,66 @@ const resetForm = () => {
     publishTime: undefined,
     clickCount: undefined,
     fthName: undefined,
+    pubText1: undefined,
+    priText1: undefined,
+    pubText2: undefined,
   }
   formRef.value?.resetFields()
 }
 
 // 富文本编辑器
-const editorRef = shallowRef()
-const valueHtml = ref('<p>hello</p>')
-const toolbarConfig = {}
-const editorConfig = { placeholder: '请输入内容...' }
+const editorRef1 = shallowRef()
+const editorRef2 = shallowRef()
+const editorRef3 = shallowRef()
+const valueHtml1 = ref(formData.value.pubText1)
+const valueHtml2 = ref(formData.value.priText1)
+const valueHtml3 = ref(formData.value.pubText2)
+const toolbarConfig1 = {}
+const toolbarConfig2 = {}
+const toolbarConfig3 = {}
+const editorConfig1 = { placeholder: '请输入公开内容...' }
+const editorConfig2 = { placeholder: '请输入加密内容，没有则可不写...' }
+const editorConfig3 = { placeholder: '请输入公开内容，没有则可不写...' }
 // 模拟 ajax 异步获取内容
 onMounted(() => {
   setTimeout(() => {
-    valueHtml.value = '<p>模拟 Ajax 异步设置内容</p>'
-  }, 1500)
+    valueHtml1.value = formData.value.pubText1
+    valueHtml2.value = formData.value.priText1
+    valueHtml3.value = formData.value.pubText2
+  }, 200)
 })
 // 组件销毁时，也及时销毁编辑器
 onBeforeUnmount(() => {
-  const editor = editorRef.value
-  if (editor == null) return
-  editor.destroy()
+  const editor1 = editorRef1.value
+  const editor2 = editorRef2.value
+  const editor3 = editorRef3.value
+  if (editor1 == null){
+
+  } else{
+    editor1.destroy()
+  }
+  if (editor2 == null){
+
+  } else{
+    editor2.destroy()
+  }
+  if (editor3 == null){
+
+  } else{
+    editor3.destroy()
+  }
 })
-const handleCreated = (editor) => {
-  editorRef.value = editor // 记录 editor 实例，重要！
+const handleCreated1 = (editor) => {
+  editorRef1.value = editor // 记录 editor 实例，重要！
 }
-const mode = 'default'
+const handleCreated2 = (editor) => {
+  editorRef2.value = editor // 记录 editor 实例，重要！
+}
+const handleCreated3 = (editor) => {
+  editorRef3.value = editor // 记录 editor 实例，重要！
+}
+
+const mode1 = 'default'
+const mode2 = 'default'
+const mode3 = 'default'
 </script>

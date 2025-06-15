@@ -8,7 +8,10 @@ export interface OilArticleVO {
   source: string // 文章来源
   publishTime: Date // 发布时间
   clickCount: string // 点击数
-  fthName: string // 上级名称
+  fthName: string // 上级分类
+  pubText1: string,
+  priText1: string,
+  pubText2: string,
 }
 
 // 文章 API
@@ -42,4 +45,4 @@ export const OilArticleApi = {
   exportOilArticle: async (params) => {
     return await request.download({ url: `/system/oil-article/export-excel`, params })
   },
-}
+}
