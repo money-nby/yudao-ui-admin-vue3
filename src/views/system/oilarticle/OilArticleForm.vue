@@ -126,8 +126,10 @@
 import { OilArticleApi, OilArticleVO } from '@/api/system/oilarticle'
 import '@wangeditor/editor/dist/css/style.css' // 引入 css
 import { ref, shallowRef, onBeforeUnmount, onMounted } from 'vue'
+import { useUpload } from '@/components/UploadFile/src/useUpload'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import { getIntDictOptions } from '@/utils/dict'
+import { getAccessToken } from '@/utils/auth'
 
 /** 文章 表单 */
 defineOptions({ name: 'OilArticleForm' })
@@ -139,6 +141,7 @@ const dialogVisible = ref(false) // 弹窗的是否展示
 const dialogTitle = ref('') // 弹窗的标题
 const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
 const formType = ref('') // 表单的类型：create - 新增；update - 修改
+const { uploadUrl } = useUpload()
 const formData = ref({
   id: undefined,
   fthId: undefined,
@@ -224,9 +227,110 @@ const valueHtml3 = ref(formData.value.pubText2)
 const toolbarConfig1 = {}
 const toolbarConfig2 = {}
 const toolbarConfig3 = {}
-const editorConfig1 = { placeholder: '请输入公开内容...' }
-const editorConfig2 = { placeholder: '请输入加密内容，没有则可不写...' }
-const editorConfig3 = { placeholder: '请输入公开内容，没有则可不写...' }
+const editorConfig1 = {
+  placeholder: '请输入公开内容...',
+  MENU_CONF: {
+    // 图片上传配置
+    uploadImage: {
+      // server: '/admin-api/infra/file/upload', // Ruoyi 上传接口
+      server: uploadUrl, // Ruoyi 上传接口
+      fieldName: 'file', // 字段名需与后端一致
+      maxFileSize: 50 * 1024 * 1024, // 10MB
+      allowedFileTypes: ['image/*'],
+      // 自定义返回数据解析（适配 Ruoyi 格式）
+      customInsert(res, insertFn) {
+        console.log(res);
+        if (res.code === 0) {
+          insertFn(res.data) // 插入图片 URL
+        } else {
+          throw new Error(res.msg || '上传失败')
+        }
+      },
+      // 请求头添加 Token（Ruoyi 需要认证）
+      headers: {
+        Authorization: 'Bearer ' + getAccessToken(),
+      },
+    },
+    // 其他文件类型（如视频）
+    uploadVideo: {
+      server: '/admin-api/infra/file/upload',
+      fieldName: 'file',
+      customInsert(res, insertFn) {
+        if (res.code === 200) {
+          insertFn(res.data.url)
+        }
+      },
+    },
+  },
+}
+const editorConfig2 = { placeholder: '请输入加密内容，没有则可不写...' ,
+  MENU_CONF: {
+    // 图片上传配置
+    uploadImage: {
+      // server: '/admin-api/infra/file/upload', // Ruoyi 上传接口
+      server: uploadUrl, // Ruoyi 上传接口
+      fieldName: 'file', // 字段名需与后端一致
+      maxFileSize: 50 * 1024 * 1024, // 10MB
+      allowedFileTypes: ['image/*'],
+      // 自定义返回数据解析（适配 Ruoyi 格式）
+      customInsert(res, insertFn) {
+        console.log(res);
+        if (res.code === 0) {
+          insertFn(res.data) // 插入图片 URL
+        } else {
+          throw new Error(res.msg || '上传失败')
+        }
+      },
+      // 请求头添加 Token（Ruoyi 需要认证）
+      headers: {
+        Authorization: 'Bearer ' + getAccessToken(),
+      },
+    },
+    // 其他文件类型（如视频）
+    uploadVideo: {
+      server: '/admin-api/infra/file/upload',
+      fieldName: 'file',
+      customInsert(res, insertFn) {
+        if (res.code === 200) {
+          insertFn(res.data.url)
+        }
+      },
+    },
+  },}
+const editorConfig3 = { placeholder: '请输入公开内容，没有则可不写...' ,
+  MENU_CONF: {
+    // 图片上传配置
+    uploadImage: {
+      // server: '/admin-api/infra/file/upload', // Ruoyi 上传接口
+      server: uploadUrl, // Ruoyi 上传接口
+      fieldName: 'file', // 字段名需与后端一致
+      maxFileSize: 50 * 1024 * 1024, // 10MB
+      allowedFileTypes: ['image/*'],
+      // 自定义返回数据解析（适配 Ruoyi 格式）
+      customInsert(res, insertFn) {
+        console.log(res);
+        if (res.code === 0) {
+          insertFn(res.data) // 插入图片 URL
+        } else {
+          throw new Error(res.msg || '上传失败')
+        }
+      },
+      // 请求头添加 Token（Ruoyi 需要认证）
+      headers: {
+        Authorization: 'Bearer ' + getAccessToken(),
+      },
+    },
+    // 其他文件类型（如视频）
+    uploadVideo: {
+      server: '/admin-api/infra/file/upload',
+      fieldName: 'file',
+      customInsert(res, insertFn) {
+        if (res.code === 200) {
+          insertFn(res.data.url)
+        }
+      },
+    },
+  },}
 // 模拟 ajax 异步获取内容
 onMounted(() => {
   setTimeout(() => {
