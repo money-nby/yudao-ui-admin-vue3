@@ -263,7 +263,7 @@ const handleAccess = async (id: number) => {
       status: 1,
       id
     }
-    await OilArticleApi.updateOilArticle(data as unknown as OilArticleVO)
+    await OilArticleApi.updateOilArticleStatus(data as unknown as OilArticleVO)
     message.success(t('common.updateSuccess'))
     // 刷新列表
     await getList()
@@ -280,7 +280,7 @@ const handleDeny = async (id: number) => {
       status: 2,
       id
     }
-    await OilArticleApi.updateOilArticle(data as unknown as OilArticleVO)
+    await OilArticleApi.updateOilArticleStatus(data as unknown as OilArticleVO)
     message.success(t('common.updateSuccess'))
     // 刷新列表
     await getList()

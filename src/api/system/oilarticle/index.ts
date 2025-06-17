@@ -36,6 +36,11 @@ export const OilArticleApi = {
     return await request.put({ url: `/system/oil-article/update`, data })
   },
 
+  // 审核文章
+  updateOilArticleStatus: async (data: OilArticleVO) => {
+    return await request.put({ url: `/system/oil-article/updateStatus`, data })
+  },
+
   // 删除文章
   deleteOilArticle: async (id: number) => {
     return await request.delete({ url: `/system/oil-article/delete?id=` + id })
